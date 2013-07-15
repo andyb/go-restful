@@ -5,6 +5,7 @@ package restful
 import (
 	"log"
 	"net/http"
+	"runtime"
 	"strings"
 )
 
@@ -97,7 +98,8 @@ func DefaultDispatch(httpWriter http.ResponseWriter, httpRequest *http.Request) 
 	if !DoNotRecover { // catch all for 500 response
 		defer func() {
 			if r := recover(); r != nil {
-				log.Println("[restful] recover from panic situation:", r)
+				_, f, l, _ := runtime.Caller(4)
+				log.Printf("[restful] [%s:%d] recover from panic situation: %v\n", f, l, r)
 				httpWriter.WriteHeader(http.StatusInternalServerError)
 				return
 			}
